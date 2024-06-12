@@ -1,4 +1,6 @@
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -68,6 +70,7 @@ class GameFrame extends JFrame{
 
         //입력 버튼
         JButton inputButton = new JButton("입력");
+        inputButton.setEnabled(false);
         c.add(inputButton);
         inputButton.setBounds(400, 100, 200, 30); //
         inputButton.setHorizontalAlignment(JTextField.CENTER);
@@ -77,11 +80,37 @@ class GameFrame extends JFrame{
                 JButton button = (JButton)e.getSource();
                 JFrame frame = (JFrame)button.getTopLevelAncestor();
 
-                //플레이어 턴 확인 및
+                //플레이어 숫자야구 실행
                 int number = Integer.valueOf(inputBox.getText());
                 player[playerTurn].numbers.add(number);
                 playerTurn = playerTurn + 1 >= 2 ? 0 : playerTurn + 1;
+                inputBox.setText(""); //텍스트 박스 비우기
                 System.out.println(player[0].numbers);
+            }
+        });
+        inputBox.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                validateTextField();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                validateTextField();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                validateTextField();
+            }
+
+            // 텍스트 필드의 내용을 검증하는 메소드
+            private void validateTextField() {
+                if (inputBox.getText().length() == 4) {
+                    inputButton.setEnabled(true);
+                } else {
+                    inputButton.setEnabled(false);
+                }
             }
         });
     }
