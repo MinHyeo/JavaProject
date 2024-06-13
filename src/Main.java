@@ -21,22 +21,19 @@ class Player {
     }
 }
 
-abstract class test extends JFrame{}
-
-class GameFrame extends test {
+abstract class AbstractGameFrame extends JFrame {
     Container c = getContentPane();
     Player[] player = new Player[2];
     int[] answer = new int[4];
     int playerTurn = 0;
     JTextArea A, B;
 
-    public GameFrame(Player playerA, Player playerB) {
+    public AbstractGameFrame(Player playerA, Player playerB) {
         player[0] = playerA;
         player[1] = playerB;
 
         setTitle("숫자 야구");
         setSize(1000, 800);
-        setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         PrintPlayerBox();
@@ -51,6 +48,113 @@ class GameFrame extends test {
         JOptionPane.showMessageDialog(this, "숫자 야구 게임에 오신 것을 환영합니다!\n4자리 숫자를 입력하여 스트라이크와 볼의 개수를 맞추세요.\n같은 숫자는 중복되지 않습니다.", "게임 시작", JOptionPane.INFORMATION_MESSAGE);
     }
 
+    abstract void PrintInputBox();
+
+    void PrintPlayerBox() {
+        c.setLayout(null);
+
+        // 플레이어 A의 이름을 표시
+        JLabel playerALabel = new JLabel(player[0].name);
+        playerALabel.setBounds(10, 10, 140, 40);
+        playerALabel.setFont(new Font("맑은 고딕", Font.PLAIN, 20));
+        playerALabel.setForeground(Color.BLUE); // 파란색으로 설정
+        c.add(playerALabel);
+
+        // 플레이어 A의 입력 값 출력 위치
+        A = new JTextArea();
+        A.setBounds(10, 50, 300, 500);
+        A.setBackground(Color.white);
+        c.add(A, BorderLayout.CENTER);
+
+        // 플레이어 B의 이름을 표시
+        JLabel playerBLabel = new JLabel(player[1].name);
+        playerBLabel.setBounds(getWidth() - 300, 10, 10, 40);
+        playerBLabel.setFont(new Font("맑은 고딕", Font.PLAIN, 20));
+        playerBLabel.setForeground(Color.RED); // 빨간색으로 설정
+        c.add(playerBLabel);
+
+        // 플레이어 B의 입력 값 출력 위치
+        B = new JTextArea();
+        B.setBounds(700, 50, 290, 500);
+        B.setBackground(Color.white);
+        c.add(B, BorderLayout.CENTER);
+    }
+
+    void RestartButton() {
+        JButton restart = new JButton("다시 시작");
+        restart.setBounds(400, 500, 200, 30); // 위치와 크기 설정 (중앙 아래쪽에 위치하도록 설정)
+        restart.setFont(new Font("맑은 고딕", Font.PLAIN, 18));
+        restart.setForeground(Color.BLUE); // 파란색으로 설정
+
+        c.add(restart);
+
+        restart.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose(); // 현재 프레임을 닫음
+                new NameInputDialog(); // 새로운 이름 입력 다이얼로그를 엶
+            }
+        });
+    }
+
+    void GameExitButton() {
+        JButton gameExit = new JButton("게임 종료");
+        gameExit.setBounds(400, 600, 200, 30); // 위치와 크기 설정 (중앙 아래쪽에 위치하도록 설정)
+        gameExit.setFont(new Font("맑은 고딕", Font.PLAIN, 18));
+        gameExit.setForeground(Color.RED); // 빨간색으로 설정
+
+        c.add(gameExit);
+
+        gameExit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0); // 프로그램 종료
+            }
+        });
+    }
+
+    void makeAnswer() {
+        Random r = new Random();
+        Set<Integer> set = new HashSet<>();
+        while (set.size() < 4) {
+            int num = r.nextInt(10);
+            set.add(num);
+        }
+
+        int i = 0;
+        for (int num : set) {
+            answer[i++] = num;
+        }
+    }
+
+    void showRestartDialog(String message) {
+        int option = JOptionPane.showConfirmDialog(this, message + "\n다시 시작하시겠습니까?", "게임 종료", JOptionPane.YES_NO_OPTION);
+        if (option == JOptionPane.YES_OPTION) {
+            dispose();
+            new NameInputDialog(); // 새로운 이름 입력 다이얼로그를 엶
+        } else {
+            System.exit(0); // 프로그램 종료
+        }
+    }
+
+    boolean hasDuplicateDigits(String input) {
+        Set<Character> charSet = new HashSet<>();
+        for (char c : input.toCharArray()) {
+            if (!charSet.add(c)) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
+class GameFrame extends AbstractGameFrame {
+    public GameFrame(Player playerA, Player playerB) {
+        super(playerA, playerB);
+        setVisible(true);
+    }
+
+    @Override
     void PrintInputBox() {
         c.setLayout(null);
 
@@ -183,106 +287,6 @@ class GameFrame extends test {
                 }
             }
         });
-    }
-
-    void PrintPlayerBox() {
-        c.setLayout(null);
-
-        // 플레이어 A의 이름을 표시
-        JLabel playerALabel = new JLabel(player[0].name);
-        playerALabel.setBounds(10, 10, 140, 40);
-        playerALabel.setFont(new Font("맑은 고딕", Font.PLAIN, 20));
-        playerALabel.setForeground(Color.BLUE); // 파란색으로 설정
-        c.add(playerALabel);
-
-        // 플레이어 A의 입력 값 출력 위치
-        A = new JTextArea();
-        A.setBounds(10, 50, 300, 500);
-        A.setBackground(Color.white);
-        c.add(A, BorderLayout.CENTER);
-
-        // 플레이어 B의 이름을 표시
-        JLabel playerBLabel = new JLabel(player[1].name);
-        playerBLabel.setBounds(getWidth() - 300, 10, 140, 40);
-        playerBLabel.setFont(new Font("맑은 고딕", Font.PLAIN, 20));
-        playerBLabel.setForeground(Color.RED); // 빨간색으로 설정
-        c.add(playerBLabel);
-
-        // 플레이어 B의 입력 값 출력 위치
-        B = new JTextArea();
-        B.setBounds(700, 50, 290, 500);
-        B.setBackground(Color.white);
-        c.add(B, BorderLayout.CENTER);
-    }
-
-    void RestartButton()    // 다시 시작 버튼
-    {
-        JButton restart = new JButton("다시 시작");
-        restart.setBounds(400, 500, 200, 30); // 위치와 크기 설정 (중앙 아래쪽에 위치하도록 설정)
-        restart.setFont(new Font("맑은 고딕", Font.PLAIN, 18));
-        restart.setForeground(Color.BLUE); // 파란색으로 설정
-
-        c.add(restart);
-
-        restart.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dispose(); // 현재 프레임을 닫음
-                new NameInputDialog(); // 새로운 이름 입력 다이얼로그를 엶
-            }
-        });
-    }
-
-    void GameExitButton()    // 게임 종료 버튼
-    {
-        JButton gameExit = new JButton("게임 종료");
-        gameExit.setBounds(400, 600, 200, 30); // 위치와 크기 설정 (중앙 아래쪽에 위치하도록 설정)
-        gameExit.setFont(new Font("맑은 고딕", Font.PLAIN, 18));
-        gameExit.setForeground(Color.RED); // 빨간색으로 설정
-
-        c.add(gameExit);
-
-        gameExit.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0); // 프로그램 종료
-            }
-        });
-    }
-
-    void makeAnswer()    // 랜덤으로 중복되지 않는 4자리 숫자 생성
-    {
-        Random r = new Random();
-        Set<Integer> set = new HashSet<>();
-        while (set.size() < 4) {
-            int num = r.nextInt(10);
-            set.add(num);
-        }
-
-        int i = 0;
-        for (int num : set) {
-            answer[i++] = num;
-        }
-    }
-
-    void showRestartDialog(String message) {
-        int option = JOptionPane.showConfirmDialog(this, message + "\n다시 시작하시겠습니까?", "게임 종료", JOptionPane.YES_NO_OPTION);
-        if (option == JOptionPane.YES_OPTION) {
-            dispose();
-            new NameInputDialog(); // 새로운 이름 입력 다이얼로그를 엶
-        } else {
-            System.exit(0); // 프로그램 종료
-        }
-    }
-
-    boolean hasDuplicateDigits(String input) {
-        Set<Character> charSet = new HashSet<>();
-        for (char c : input.toCharArray()) {
-            if (!charSet.add(c)) {
-                return true;
-            }
-        }
-        return false;
     }
 }
 
