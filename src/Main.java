@@ -73,7 +73,7 @@ abstract class AbstractGameFrame extends JFrame {
 
         // 플레이어 B의 이름을 표시
         JLabel playerBLabel = new JLabel(player[1].name);
-        playerBLabel.setBounds(getWidth() - 300, 10, 10, 40);
+        playerBLabel.setBounds(700, 10, 290, 40); // 위치와 크기 수정
         playerBLabel.setFont(new Font("맑은 고딕", Font.PLAIN, 20));
         playerBLabel.setForeground(Color.RED); // 빨간색으로 설정
         c.add(playerBLabel);
