@@ -21,13 +21,14 @@ class Player {
     }
 }
 
-class GameFrame extends JFrame {
+abstract class test extends JFrame{}
+
+class GameFrame extends test {
     Container c = getContentPane();
     Player[] player = new Player[2];
     int[] answer = new int[4];
     int playerTurn = 0;
     JTextArea A, B;
-    JLabel chancesLabel;
 
     public GameFrame(Player playerA, Player playerB) {
         player[0] = playerA;
@@ -58,12 +59,6 @@ class GameFrame extends JFrame {
         inputText.setBounds(0, 0, 1000, 50);
         inputText.setHorizontalAlignment(JLabel.CENTER);
         c.add(inputText);
-
-        // 남은 기회 수 텍스트
-        chancesLabel = new JLabel("남은 기회: 10");
-        chancesLabel.setBounds(0, 30, 1000, 50);
-        chancesLabel.setHorizontalAlignment(JLabel.CENTER);
-        c.add(chancesLabel);
 
         // 숫자 입력칸
         JTextField inputBox = new JTextField("", 4);
@@ -97,8 +92,6 @@ class GameFrame extends JFrame {
         inputButton.setBounds(400, 150, 200, 30); //
         inputButton.setHorizontalAlignment(JTextField.CENTER);
         inputButton.addActionListener(new ActionListener() {
-            int chances = 10;
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 JButton button = (JButton) e.getSource();
@@ -158,13 +151,6 @@ class GameFrame extends JFrame {
                         B.append("게임에서 승리하셨습니다!");
                         showRestartDialog("플레이어 B가 승리하였습니다!");
                     }
-                }
-
-                // 남은 기회 수 감소
-                chances--;
-                chancesLabel.setText("남은 기회: " + chances);
-                if (chances == 0) {
-                    showRestartDialog("기회가 모두 소진되었습니다. 게임 종료!");
                 }
 
                 // 플레이어 차례 변경
