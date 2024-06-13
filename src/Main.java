@@ -347,4 +347,3 @@ public class Main {
         new NameInputDialog();
     }
 }
-
