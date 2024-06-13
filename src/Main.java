@@ -27,6 +27,10 @@ abstract class AbstractGameFrame extends JFrame {
     int[] answer = new int[4];
     int playerTurn = 0;
     JTextArea A, B;
+    JLabel timerLabel;
+    int timeLimit = 30; // 시간 제한 (초)
+    Timer timer;
+    int remainingTime;
 
     public AbstractGameFrame(Player playerA, Player playerB) {
         player[0] = playerA;
@@ -42,6 +46,7 @@ abstract class AbstractGameFrame extends JFrame {
         PrintInputBox();
         makeAnswer();
         showStartMessage();
+        startTimer();
     }
 
     void showStartMessage() {
@@ -78,6 +83,12 @@ abstract class AbstractGameFrame extends JFrame {
         B.setBounds(700, 50, 290, 500);
         B.setBackground(Color.white);
         c.add(B, BorderLayout.CENTER);
+
+        // 타이머 표시
+        timerLabel = new JLabel("남은 시간: " + timeLimit + "초");
+        timerLabel.setBounds(400, 200, 200, 30);
+        timerLabel.setHorizontalAlignment(JLabel.CENTER);
+        c.add(timerLabel);
     }
 
     void RestartButton() {
@@ -145,6 +156,33 @@ abstract class AbstractGameFrame extends JFrame {
             }
         }
         return false;
+    }
+
+    void startTimer() {
+        remainingTime = timeLimit;
+        timer = new Timer(1000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                remainingTime--;
+                timerLabel.setText("남은 시간: " + remainingTime + "초");
+                if (remainingTime <= 0) {
+                    timer.stop();
+                    playerTurn = playerTurn + 1 >= 2 ? 0 : playerTurn + 1; // 다음 플레이어로 넘어감
+                    remainingTime = timeLimit;
+                    timer.start();
+                }
+            }
+        });
+        timer.start();
+    }
+
+    void resetTimer() {
+        if (timer != null) {
+            timer.stop();
+        }
+        remainingTime = timeLimit;
+        timerLabel.setText("남은 시간: " + remainingTime + "초");
+        timer.start();
     }
 }
 
@@ -256,6 +294,9 @@ class GameFrame extends AbstractGameFrame {
                         showRestartDialog("플레이어 B가 승리하였습니다!");
                     }
                 }
+
+                // 타이머를 리셋
+                resetTimer();
 
                 // 플레이어 차례 변경
                 playerTurn = playerTurn + 1 >= 2 ? 0 : playerTurn + 1;
